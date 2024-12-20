@@ -7,6 +7,8 @@
 # ╩╩ ╩╩  ╚═╝╩╚═ ╩ ╚═╝ IMPORTS
 #==================================================
 
+
+
 # pylint: disable=import-error,invalid-name,broad-except,superfluous-parens
 import re
 import os.path as op
@@ -569,10 +571,17 @@ class UnlistedSheetsList(object):
             .WhereElementIsNotElementType() \
             .ToElements()
 
-
+#New print option added SD
 class PrintSheetsWindow(forms.WPFWindow):
     def __init__(self, xaml_file_name):
         forms.WPFWindow.__init__(self, xaml_file_name)
+
+        # Initialize Save Location (default to Desktop)
+        self._save_location = USER_DESKTOP
+
+        # Bind Save Location to TextBlock
+        self.fileLocation_tb.Text = self._save_location
+
 
         self._init_psettings = None
         self._scheduled_sheets = []
@@ -583,6 +592,13 @@ class PrintSheetsWindow(forms.WPFWindow):
 
         self._setup_docs_list()
         self._setup_naming_formats()
+
+    def on_browse_button_click(self, sender, e):
+        dialog = Forms.FolderBrowserDialog()
+        result = dialog.ShowDialog()
+        if result == Forms.DialogResult.OK:
+            self.FolderPath.Text = dialog.SelectedPath
+            #print("Selected Path:", dialog.SelectedPath)
 
     # doc and schedule
     @property
@@ -801,7 +817,7 @@ class PrintSheetsWindow(forms.WPFWindow):
             )
             return False
         return True
-
+#SD Change the location
     def _print_combined_sheets_in_order(self, target_sheets):
         # make sure we can access the print config
         print_mgr = self._get_printmanager()
@@ -909,7 +925,9 @@ class PrintSheetsWindow(forms.WPFWindow):
                 forms.alert(str(e) +
                             '\nSet printer correctly in Print settings.')
                 script.exit()
-            print_filepath = op.join(r'C:\\', 'Ordered Sheet Set.pdf')
+            #print_filepath = op.join(r'C:\\', 'Ordered Sheet Set.pdf')
+            print_filepath = op.join(self._save_location, 'Ordered Sheet Set.pdf')
+
             print_mgr.PrintToFile = True
             print_mgr.PrintToFileName = print_filepath
 
@@ -960,7 +978,9 @@ class PrintSheetsWindow(forms.WPFWindow):
                 if sheet.printable:
                     if sheet.print_filename:
                         print_filepath = \
-                            op.join(USER_DESKTOP, sheet.print_filename)
+                            op.join(self._save_location, sheet.print_filename)
+                            #op.join(USER_DESKTOP, sheet.print_filename)
+
                         print_mgr.PrintToFileName = print_filepath
 
                         # set the per-sheet print settings if required
@@ -991,6 +1011,7 @@ class PrintSheetsWindow(forms.WPFWindow):
         for sheet in target_sheets:
             if sheet.printable:
                 print_filepath = op.join(USER_DESKTOP, sheet.print_filename)
+
                 print_mgr.PrintToFileName = print_filepath
 
                 if self._verify_print_filename(sheet.name, print_filepath):
@@ -1432,3 +1453,5 @@ if __shiftclick__:  # pylint: disable=E0602
             cleanup_sheetnumbers(open_doc)
 else:
     PrintSheetsWindow('PrintSheets.xaml').ShowDialog()
+
+

@@ -148,7 +148,7 @@
                     <DockPanel Grid.Row="1" Height="24" Margin="0,5,0,0">
                         <Grid Margin="0,0,10,0">
                             <Polygon Points="0,0 140,0 150,12 140,24 0,24" Fill="{DynamicResource pyRevitDarkBrush}" SnapsToDevicePixels="True" />
-                            <TextBlock x:Name="fileLocation_tb" Text="{Binding SaveLocation}" VerticalAlignment="Stretch" Margin="10,0,10,0" Foreground="White"/>
+                            <TextBlock x:Name="fileLocation_tb" Text="{Binding}" VerticalAlignment="Stretch" Margin="10,0,10,0" Foreground="White"/>
                         </Grid>
                         <Grid>
                             <Grid.ColumnDefinitions>
@@ -156,17 +156,12 @@
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
 
-                        <ComboBox x:Name="File_Location" SelectionChanged="sheetlist_changed" VerticalAlignment="Stretch" Grid.Column="0" Margin="0,0,5,0">
-                            <ComboBox.ItemTemplate>
-                                <DataTemplate>
-                                    <Grid>
-                                            <TextBlock Text="{Binding SaveLocation}" />
-                                    </Grid>
-                                </DataTemplate>
-                            </ComboBox.ItemTemplate>
-                        </ComboBox>
+                            <TextBlock Text="Folder Selection:" Grid.Row="0" Grid.Column="0" Margin="0,0,0,5" FontWeight="Bold"/>
 
-                            <Button Grid.Column="1" Content="..." Width="30" Click="browse_button_click"/>
+                            <!-- Textbox for folder path -->
+                            <TextBox Name="FolderPath" Grid.Row="1" Grid.Column="0" Margin="0,0,5,0" VerticalAlignment="Center" IsReadOnly="True" />
+
+                            <Button Name="BrowseButton" Grid.Row="1" Grid.Column="1" Content="..." Width="30" Click="on_browse_button_click"/>
                         </Grid>
                     </DockPanel>
                 </StackPanel>
