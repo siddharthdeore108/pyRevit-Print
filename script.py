@@ -9,7 +9,7 @@
 
 
 
-# pylint: disable=import-error,invalid-name,broad-except,superfluous-parens
+#pylint: disable=import-error,invalid-name,broad-except,superfluous-parens
 import re
 import os.path as op
 import codecs
@@ -23,6 +23,7 @@ from pyrevit import coreutils
 from pyrevit import forms
 from pyrevit import revit, DB
 from pyrevit import script
+
 
 
 
@@ -375,7 +376,7 @@ class EditNamingFormatsWindow(forms.WPFWindow):
     @staticmethod
     def set_naming_formats(naming_formats):
         naming_formats_dict = {
-            x.name: x.template for x in naming_formats if not x.builtin
+            x.name:x.template for x in naming_formats if not x.builtin
         }
         config.namingformats = naming_formats_dict
         script.save_config()
@@ -399,9 +400,9 @@ class EditNamingFormatsWindow(forms.WPFWindow):
 
     def reset_naming_formats(self):
         self.formats_lb.ItemsSource = \
-            ObjectModel.ObservableCollection[object](
-                EditNamingFormatsWindow.get_naming_formats()
-            )
+                ObjectModel.ObservableCollection[object](
+                    EditNamingFormatsWindow.get_naming_formats()
+                )
         if isinstance(self._starting_item, NamingFormat):
             for item in self.formats_lb.ItemsSource:
                 if item.name == self._starting_item.name:
@@ -415,7 +416,7 @@ class EditNamingFormatsWindow(forms.WPFWindow):
             self.formatters_wp,
             Windows.DataObject("name_formatter", name_formatter),
             Windows.DragDropEffects.Copy
-        )
+            )
 
     # https://social.msdn.microsoft.com/Forums/vstudio/en-US/941f6bf2-a321-459e-85c9-501ec1e13204/how-do-you-get-a-drag-and-drop-event-for-a-wpf-textbox-hosted-in-a-windows-form
     def preview_drag(self, sender, args):
@@ -425,7 +426,7 @@ class EditNamingFormatsWindow(forms.WPFWindow):
             self.template_tb.GetCharacterIndexFromPoint(
                 point=self.template_tb.PointFromScreen(mouse_po_pt),
                 snapToText=True
-            )
+                )
         self.template_tb.SelectionStart = self._drop_pos
         self.template_tb.SelectionLength = 0
         self.template_tb.Focus()
@@ -451,7 +452,7 @@ class EditNamingFormatsWindow(forms.WPFWindow):
         new_naming_format = NamingFormat(
             name='<unnamed>',
             template=naming_format.template
-        )
+            )
         self.naming_formats.Add(new_naming_format)
         self.selected_naming_format = new_naming_format
 
@@ -459,7 +460,7 @@ class EditNamingFormatsWindow(forms.WPFWindow):
         naming_format = self.selected_naming_format
         item_index = self.naming_formats.IndexOf(naming_format)
         self.naming_formats.Remove(naming_format)
-        next_index = min([item_index, self.naming_formats.Count - 1])
+        next_index = min([item_index, self.naming_formats.Count-1])
         self.selected_naming_format = self.naming_formats[next_index]
 
     def save_formats(self, sender, args):
@@ -490,8 +491,8 @@ class ScheduleSheetList(object):
         vseop = DB.ViewScheduleExportOptions()
         vseop.TextQualifier = coreutils.get_enum_none(DB.ExportTextQualifier)
         view_shedule.Export(op.dirname(schedule_data_file),
-                            op.basename(schedule_data_file),
-                            vseop)
+                             op.basename(schedule_data_file),
+                             vseop)
 
         sched_data = []
         try:
@@ -532,15 +533,15 @@ class ScheduleSheetList(object):
     def _get_ordered_schedule_sheets(self, doc):
         if doc == self.doc:
             sheets = DB.FilteredElementCollector(self.doc,
-                                                 self.schedule.Id) \
-                .OfClass(framework.get_type(DB.ViewSheet)) \
-                .WhereElementIsNotElementType() \
-                .ToElements()
+                                                 self.schedule.Id)\
+                    .OfClass(framework.get_type(DB.ViewSheet))\
+                    .WhereElementIsNotElementType()\
+                    .ToElements()
 
             return self._order_sheets_by_schedule_data(
                 self.schedule,
                 sheets
-            )
+                )
         return []
 
 
@@ -550,10 +551,10 @@ class AllSheetsList(object):
         return "<All Sheets>"
 
     def get_sheets(self, doc):
-        return DB.FilteredElementCollector(doc) \
-            .OfClass(framework.get_type(DB.ViewSheet)) \
-            .WhereElementIsNotElementType() \
-            .ToElements()
+        return DB.FilteredElementCollector(doc)\
+                 .OfClass(framework.get_type(DB.ViewSheet))\
+                 .WhereElementIsNotElementType()\
+                 .ToElements()
 
 
 class UnlistedSheetsList(object):
@@ -567,11 +568,11 @@ class UnlistedSheetsList(object):
         param_equality = DB.FilterNumericEquals()
         value_rule = DB.FilterIntegerRule(param_prov, param_equality, 0)
         param_filter = DB.ElementParameterFilter(value_rule)
-        return DB.FilteredElementCollector(doc) \
-            .OfClass(framework.get_type(DB.ViewSheet)) \
-            .WherePasses(param_filter) \
-            .WhereElementIsNotElementType() \
-            .ToElements()
+        return DB.FilteredElementCollector(doc)\
+                 .OfClass(framework.get_type(DB.ViewSheet))\
+                 .WherePasses(param_filter) \
+                 .WhereElementIsNotElementType()\
+                 .ToElements()
 
 #New print option added SD
 class PrintSheetsWindow(forms.WPFWindow):
@@ -579,7 +580,7 @@ class PrintSheetsWindow(forms.WPFWindow):
         forms.WPFWindow.__init__(self, xaml_file_name)
 
         # Initialize Save Location (default to Desktop)
-        self._save_location = USER_DESKTOP
+        self._save_location = r'C:\Users\Arth\Downloads'
 
         # Bind Save Location to TextBlock
         self.fileLocation_tb.Text = self._save_location
@@ -692,18 +693,18 @@ class PrintSheetsWindow(forms.WPFWindow):
     # private utils
     def _is_sheet_index(self, schedule_view):
         return self.sheet_cat_id == schedule_view.Definition.CategoryId \
-            and not schedule_view.IsTemplate
+               and not schedule_view.IsTemplate
 
     def _get_sheet_index_list(self):
-        schedules = DB.FilteredElementCollector(self.selected_doc) \
-            .OfClass(framework.get_type(DB.ViewSchedule)) \
-            .WhereElementIsNotElementType() \
-            .ToElements()
+        schedules = DB.FilteredElementCollector(self.selected_doc)\
+                      .OfClass(framework.get_type(DB.ViewSchedule))\
+                      .WhereElementIsNotElementType()\
+                      .ToElements()
 
         return [
             ScheduleSheetList(s) for s in schedules
             if self._is_sheet_index(s)
-        ]
+            ]
 
     def _get_printmanager(self):
         try:
@@ -761,7 +762,7 @@ class PrintSheetsWindow(forms.WPFWindow):
             self._get_psetting_items(
                 doc=self.selected_doc,
                 include_varsettings=not self.selected_doc.IsLinked
-            )
+                )
         self.printsettings_cb.ItemsSource = psetting_items
 
         print_mgr = self._get_printmanager()
@@ -769,7 +770,7 @@ class PrintSheetsWindow(forms.WPFWindow):
                       DB.InSessionPrintSetting):
             in_session = PrintSettingListItem(
                 print_mgr.PrintSetup.CurrentPrintSetting
-            )
+                )
             psetting_items.append(in_session)
             self.printsettings_cb.SelectedItem = in_session
         else:
@@ -795,13 +796,13 @@ class PrintSheetsWindow(forms.WPFWindow):
             self.combine_cb.IsChecked = False
 
     def _setup_sheet_list(self):
-        sheet_indices = self._get_sheet_index_list()
+        sheet_indices  = self._get_sheet_index_list()
         sheet_indices.append(
             AllSheetsList()
-        )
+            )
         sheet_indices.append(
             UnlistedSheetsList()
-        )
+            )
         self.schedules_cb.ItemsSource = sheet_indices
         self.schedules_cb.SelectedIndex = 0
         if self.schedules_cb.ItemsSource:
@@ -815,7 +816,7 @@ class PrintSheetsWindow(forms.WPFWindow):
                 "Skipping sheet \"%s\" "
                 "File already exist at %s.",
                 sheet_name, sheet_print_filepath
-            )
+                )
             return False
         return True
 #SD Change the location
@@ -826,7 +827,7 @@ class PrintSheetsWindow(forms.WPFWindow):
             forms.alert(
                 "Error getting print manager for this document",
                 exitscript=True
-            )
+                )
         with revit.TransactionGroup('Print Sheets in Order',
                                     doc=self.selected_doc):
             with revit.Transaction('Set Printer Settings',
@@ -841,7 +842,7 @@ class PrintSheetsWindow(forms.WPFWindow):
                     forms.alert(
                         "Print setting is incompatible with printer.",
                         expanded=str(cpSetEx)
-                    )
+                        )
                     return
             # The OrderedViewList property was added to the IViewSheetSet
             # interface in Revit 2023 and makes the non-printable char
@@ -858,7 +859,7 @@ class PrintSheetsWindow(forms.WPFWindow):
                 sheet_set = DB.ViewSet()
                 original_sheetnums = []
                 with revit.Transaction('Fix Sheet Numbers',
-                                       doc=self.selected_doc):
+                                    doc=self.selected_doc):
                     for idx, sheet in enumerate(target_sheets):
                         rvtsheet = sheet.revit_sheet
                         # removing any NPC from previous failed prints
@@ -875,9 +876,9 @@ class PrintSheetsWindow(forms.WPFWindow):
 
             # Collect existing sheet sets
             cl = DB.FilteredElementCollector(self.selected_doc)
-            viewsheetsets = cl.OfClass(framework.get_type(DB.ViewSheetSet)) \
-                .WhereElementIsNotElementType() \
-                .ToElements()
+            viewsheetsets = cl.OfClass(framework.get_type(DB.ViewSheetSet))\
+                              .WhereElementIsNotElementType()\
+                              .ToElements()
             all_viewsheetsets = {vss.Name: vss for vss in viewsheetsets}
 
             sheetsetname = 'OrderedPrintSet'
@@ -910,12 +911,12 @@ class PrintSheetsWindow(forms.WPFWindow):
                                                             DB.ViewSheet)
                             else '---',
                             type(sheet)
-                        )
+                            )
                     logger.critical(
                         'Error setting sheet set on print mechanism. '
                         'These items are included in the viewset '
                         'object:\n%s', sheet_report
-                    )
+                        )
                     raise viewset_err
 
             # set print job configurations
@@ -935,16 +936,17 @@ class PrintSheetsWindow(forms.WPFWindow):
             with revit.Transaction('Reload Keynote File',
                                    doc=self.selected_doc):
                 DB.KeynoteTable.GetKeynoteTable(revit.doc).Reload(None)
-
+            
             print_mgr.Apply()
             print_mgr.SubmitPrint()
+
 
             if not supports_OrderedViewList:
                 # now fix the sheet names
                 with revit.Transaction('Restore Sheet Numbers',
-                                       doc=self.selected_doc):
+                                    doc=self.selected_doc):
                     for sheet, sheetnum in zip(target_sheets,
-                                               original_sheetnums):
+                                            original_sheetnums):
                         rvtsheet = sheet.revit_sheet
                         rvtsheet.SheetNumber = sheetnum
 
@@ -972,7 +974,7 @@ class PrintSheetsWindow(forms.WPFWindow):
                 forms.alert(
                     "Print setting is incompatible with printer.",
                     expanded=str(cpSetEx)
-                )
+                    )
                 return
 
             for sheet in target_sheets:
@@ -981,9 +983,7 @@ class PrintSheetsWindow(forms.WPFWindow):
                         print_filepath = \
                             op.join(self._save_location, sheet.print_filename)
                             #op.join(USER_DESKTOP, sheet.print_filename)
-
                         print_mgr.PrintToFileName = print_filepath
-
 
                         # set the per-sheet print settings if required
                         if per_sheet_psettings:
@@ -1013,8 +1013,6 @@ class PrintSheetsWindow(forms.WPFWindow):
         for sheet in target_sheets:
             if sheet.printable:
                 print_filepath = op.join(USER_DESKTOP, sheet.print_filename)
-
-
                 print_mgr.PrintToFileName = print_filepath
 
                 if self._verify_print_filename(sheet.name, print_filepath):
@@ -1023,7 +1021,7 @@ class PrintSheetsWindow(forms.WPFWindow):
                 logger.debug(
                     'Linked sheet %s is not printable. Skipping print.',
                     sheet.number
-                )
+                    )
 
     def _reset_error(self):
         self.enable_element(self.print_b)
@@ -1039,8 +1037,8 @@ class PrintSheetsWindow(forms.WPFWindow):
     def _update_print_indices(self, sheet_list):
         start_idx = self.index_start
         for idx, sheet in enumerate(sheet_list):
-            sheet.print_index = INDEX_FORMAT \
-                .format(digits=self.index_digits) \
+            sheet.print_index = INDEX_FORMAT\
+                .format(digits=self.index_digits)\
                 .format(idx + start_idx)
 
     def _update_filename_template(self, template, value_type, value_getter):
@@ -1060,10 +1058,10 @@ class PrintSheetsWindow(forms.WPFWindow):
             template=template,
             value_type='tblock_param',
             value_getter=lambda x: revit.query.get_param_value(
-                revit.query.get_param(sheet.revit_tblock, x)
-            ) or revit.query.get_param_value(
-                revit.query.get_param(sheet.revit_tblock_type, x)
-            )
+                    revit.query.get_param(sheet.revit_tblock, x)
+                ) or revit.query.get_param_value(
+                    revit.query.get_param(sheet.revit_tblock_type, x)
+                )
         )
 
         ## get sheet param values
@@ -1072,7 +1070,7 @@ class PrintSheetsWindow(forms.WPFWindow):
             value_type='sheet_param',
             value_getter=lambda x: revit.query.get_param_value(
                 revit.query.get_param(sheet.revit_sheet, x)
-            )
+                )
         )
 
         # resolved the fixed formatters
@@ -1117,7 +1115,7 @@ class PrintSheetsWindow(forms.WPFWindow):
                 value_type='proj_param',
                 value_getter=lambda x: revit.query.get_param_value(
                     doc.ProjectInformation.LookupParameter(x)
-                )
+                    )
             )
 
             ## global param values
@@ -1126,7 +1124,7 @@ class PrintSheetsWindow(forms.WPFWindow):
                 value_type='glob_param',
                 value_getter=lambda x: revit.query.get_param_value(
                     revit.query.get_global_parameter(x, doc=doc)
-                )
+                    )
             )
 
             for sheet in sheet_list:
@@ -1166,7 +1164,7 @@ class PrintSheetsWindow(forms.WPFWindow):
                         psparam_psetting = \
                             next(
                                 (x for x in psettings
-                                 if x.Name == psetting_name),
+                                    if x.Name == psetting_name),
                                 None
                             )
                         if psparam_psetting:
@@ -1184,7 +1182,7 @@ class PrintSheetsWindow(forms.WPFWindow):
                                 tblock,
                                 self.selected_printer,
                                 psettings
-                            ),
+                                ),
                             set_by_param=False
                         )
                 # the analysis result might be None
@@ -1202,7 +1200,7 @@ class PrintSheetsWindow(forms.WPFWindow):
         index_digits = \
             coreutils.get_integer_length(
                 len(self._scheduled_sheets) + self.index_start
-            )
+                )
         self.index_slider.Minimum = max([index_digits, 2])
         self.index_slider.Maximum = self.index_slider.Minimum + 3
 
@@ -1227,8 +1225,8 @@ class PrintSheetsWindow(forms.WPFWindow):
                         tblocks,
                         revit.query.get_all_print_settings(
                             doc=self.selected_doc
+                            )
                         )
-                    )
                 self.show_element(self.varsizeguide)
                 self.show_element(self.psettingcol)
                 self._scheduled_sheets = [
@@ -1241,8 +1239,8 @@ class PrintSheetsWindow(forms.WPFWindow):
                         rev_settings=rev_cfg)
                     for x in self.selected_sheetlist.get_sheets(
                         doc=self.selected_doc
-                    )
-                ]
+                        )
+                    ]
             else:
                 print_settings = self.selected_print_setting.print_settings
                 self.hide_element(self.varsizeguide)
@@ -1258,8 +1256,8 @@ class PrintSheetsWindow(forms.WPFWindow):
                         rev_settings=rev_cfg)
                     for x in self.selected_sheetlist.get_sheets(
                         doc=self.selected_doc
-                    )
-                ]
+                        )
+                    ]
         self._update_combine_option()
         # self._update_index_slider()
         self.options_changed(None, None)
@@ -1333,7 +1331,7 @@ class PrintSheetsWindow(forms.WPFWindow):
                         self._get_psetting_items(
                             doc=self.selected_doc,
                             psettings=sheet_psettings
-                        ),
+                            ),
                     'All Print Settings':
                         all_psettings
                 }
@@ -1349,7 +1347,7 @@ class PrintSheetsWindow(forms.WPFWindow):
                     title='Select Print Setting',
                     item_container_template=self.Resources["printSettingsItem"],
                     width=450, height=400
-                )
+                    )
                 if psetting_item:
                     for sheet in self.selected_printable_sheets:
                         sheet.print_settings = psetting_item
@@ -1372,7 +1370,7 @@ class PrintSheetsWindow(forms.WPFWindow):
             EditNamingFormatsWindow(
                 'EditNamingFormats.xaml',
                 start_with=self.selected_naming_format
-            )
+                )
         editfmt_wnd.show_dialog()
         self.namingformat_cb.ItemsSource = editfmt_wnd.naming_formats
         self.namingformat_cb.SelectedItem = editfmt_wnd.selected_naming_format
@@ -1390,7 +1388,7 @@ class PrintSheetsWindow(forms.WPFWindow):
                     "You have a series of sheets selected. Do you want to "
                     "print the selected sheets or all sheets?",
                     options=["Only Selected Sheets", "All Scheduled Sheets"]
-                )
+                    )
                 selected_only = opts == "Only Selected Sheets"
 
             target_sheets = \
@@ -1399,7 +1397,7 @@ class PrintSheetsWindow(forms.WPFWindow):
             if not self.combine_print:
                 # verify all sheets have print settings
                 if self.selected_print_setting.allows_variable_paper \
-                        and not all(x.print_settings for x in target_sheets):
+                    and not all(x.print_settings for x in target_sheets):
                     forms.alert(
                         'Not all sheets have a print setting assigned to them. '
                         'Select sheets and assign print settings.')
@@ -1429,7 +1427,6 @@ class PrintSheetsWindow(forms.WPFWindow):
                     self._print_sheets_in_order(target_sheets)
 
 
-
 def cleanup_sheetnumbers(doc):
     sheets = revit.query.get_sheets(doc=doc)
     with revit.Transaction('Cleanup Sheet Numbers', doc=doc):
@@ -1448,14 +1445,13 @@ forms.check_modeldoc(exitscript=True)
 # ensure there is nothing selected
 revit.selection.get_selection().clear()
 
-
 # TODO: add copy filenames to sheet list
-if __shiftclick__:  # pylint: disable=E0602
+if __shiftclick__:  #pylint: disable=E0602
     open_docs = forms.select_open_docs(check_more_than_one=False)
     if open_docs:
         for open_doc in open_docs:
             cleanup_sheetnumbers(open_doc)
+
 else:
     PrintSheetsWindow('PrintSheets.xaml').ShowDialog()
-
 
