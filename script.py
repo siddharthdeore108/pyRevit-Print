@@ -24,6 +24,8 @@ from pyrevit import forms
 from pyrevit import revit, DB
 from pyrevit import script
 
+
+
 # ╦  ╦╔═╗╦═╗╦╔═╗╔╗ ╦  ╔═╗╔═╗
 # ╚╗╔╝╠═╣╠╦╝║╠═╣╠╩╗║  ║╣ ╚═╗
 #  ╚╝ ╩ ╩╩╚═╩╩ ╩╚═╝╩═╝╚═╝╚═╝ VARIABLES
@@ -582,7 +584,6 @@ class PrintSheetsWindow(forms.WPFWindow):
         # Bind Save Location to TextBlock
         self.fileLocation_tb.Text = self._save_location
 
-
         self._init_psettings = None
         self._scheduled_sheets = []
 
@@ -983,6 +984,7 @@ class PrintSheetsWindow(forms.WPFWindow):
 
                         print_mgr.PrintToFileName = print_filepath
 
+
                         # set the per-sheet print settings if required
                         if per_sheet_psettings:
                             print_mgr.PrintSetup.CurrentPrintSetting = \
@@ -1011,6 +1013,7 @@ class PrintSheetsWindow(forms.WPFWindow):
         for sheet in target_sheets:
             if sheet.printable:
                 print_filepath = op.join(USER_DESKTOP, sheet.print_filename)
+
 
                 print_mgr.PrintToFileName = print_filepath
 
@@ -1424,6 +1427,7 @@ class PrintSheetsWindow(forms.WPFWindow):
                     self._print_linked_sheets_in_order(target_sheets)
                 else:
                     self._print_sheets_in_order(target_sheets)
+
 
 
 def cleanup_sheetnumbers(doc):
