@@ -148,7 +148,7 @@
                     <DockPanel Grid.Row="1" Height="24" Margin="0,5,0,0">
                         <Grid Margin="0,0,10,0">
                             <Polygon Points="0,0 140,0 150,12 140,24 0,24" Fill="{DynamicResource pyRevitDarkBrush}" SnapsToDevicePixels="True" />
-                            <TextBlock x:Name="fileLocation_tb" Text="{Binding}" VerticalAlignment="Stretch" Margin="10,0,10,0" Foreground="White"/>
+                            <TextBlock x:Name="fileLocation_tb" Text="Location" VerticalAlignment="Stretch" Margin="10,0,10,0" Foreground="White"/>
                         </Grid>
                         <Grid>
                             <Grid.ColumnDefinitions>
